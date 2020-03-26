@@ -7,69 +7,49 @@ public class ToggleTracking : MonoBehaviour
     // Start is called before the first frame update
 	bool flag_pos;
     bool flag_rotate;
-	public GameObject mainCamera;
-	public GameObject mainCameraParent;
-	public Vector3 prevParentPos;
-	//public Vector3 prevChildPos;
+	public Vector3 prevChildPos;
+	public Quaternion prevParentAngle;
 	public GameObject centerEyeAnchor;
 	
     void Start()
     {
         flag_pos = false;
 		flag_rotate = false;
-		prevParentPos = mainCameraParent.transform.position;
-		//prevChildPos = mainCamera.transform.position;
+		prevChildPos = centerEyeAnchor.transform.position;
+		prevParentAngle = transform.rotation;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown("g"))
+		if(flag_pos){
+			disablePosTracking();
+		}
+		
+		if(flag_rotate){
+			disableRotateTracking();
+		}
+		
+        if (Input.GetKeyDown(KeyCode.G))
         {
-            flag_pos = !flag_pos;
-            if (flag_pos)
-            {
-				prevParentPos = mainCameraParent.transform.position;
-                disablePosTracking();
-            }
-            else
-            {
-                enablePosTracking();
-            }
+            flag_pos = !flag_pos;            
+			prevChildPos = centerEyeAnchor.transform.position;
         }
 		
-		if (Input.GetKeyDown("h"))
+		if (Input.GetKeyDown(KeyCode.H))
         {
             flag_rotate = !flag_rotate;
-            if (flag_rotate)
-            {
-                //disableRotateTracking();
-            }
-            else
-            {
-                //enableRotateTracking();
-            }
+            prevParentAngle = centerEyeAnchor.transform.rotation;
         }
     }
 	
 	void disablePosTracking(){
-		Vector3 currChildPos = centerEyeAnchor.transform.localPosition;
-		mainCameraParent.transform.position =  new Vector3(prevParentPos.x-currChildPos.x, prevParentPos.y-currChildPos.y,prevParentPos.z-currChildPos.z);
-		
-		//prevParentPos = mainCameraParent.transform.position;
-	}
-	
-	void enablePosTracking(){
-		//mainCameraParent.transform.position =  centerEyeAnchor.localPosition;
+		Vector3 currChildPos = centerEyeAnchor.transform.position;
+		transform.position +=  (prevChildPos - currChildPos);
 	}
 	
 	void disableRotateTracking(){
-		Vector3 mainCameraPos = mainCamera.transform.position;
-		mainCameraParent.transform.position =  new Vector3(mainCameraPos.x, mainCameraPos.y, -mainCameraPos.z);
-	}
-	
-	void enableRotateTracking(){
-		Vector3 mainCameraPos = mainCamera.transform.position;
-		mainCameraParent.transform.position =  new Vector3(mainCameraPos.x, mainCameraPos.y, mainCameraPos.z);
+		Quaternion currChildAngle = centerEyeAnchor.transform.localRotation;
+		transform.rotation = prevParentAngle * Quaternion.Inverse(currChildAngle);
 	}
 }
