@@ -1,0 +1,1 @@
+In this game, the space key is for the balls to appear/disappear. G is for disabling/enabling the position tracking, while H is for disabling/enabling the rotation tracking.
